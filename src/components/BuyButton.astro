@@ -1,0 +1,18 @@
+---
+const MEXICO = 'MX';
+
+const contry = Astro.request.headers.get('X-Vercel-IP-Country') ?? 'MX';
+
+const storeCountry = contry === MEXICO ? 'mexico' : 'usa';
+
+const conuntryName = contry === MEXICO ? 'Mexico' : 'Estados Unidos';
+
+const { buy } = Astro.props;
+const url = buy[storeCountry];
+---
+
+<div class="flex justify-start">
+    <a href={url} target="_blank" rel="nofollow" class="inline-block text-xl bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+        Buy Now {conuntryName}
+    </a>
+</div>

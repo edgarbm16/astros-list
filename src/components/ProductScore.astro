@@ -1,0 +1,17 @@
+---
+    import { SCORE_API_ENDPOINT } from "astro:env/server";
+
+    // const scoreElement = document.querySelector('#score');
+
+    // fetch(SCORE_API_ENDPOINT)
+    //     .then(res => res.text())
+    //     .then(scoreValue => {
+    //         if (scoreValue) {
+    //             scoreElement.innerHTML = `💫 Score: ${scoreValue.trim()}/5`;
+    //         }
+    //     })
+    const res = await fetch(SCORE_API_ENDPOINT);
+    const scoreValue = await res.text();
+---
+
+    <span class="text-white" id="score">💫 Score: ${scoreValue.trim()}/5</span>

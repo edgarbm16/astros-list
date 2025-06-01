@@ -1,0 +1,82 @@
+---
+import { getCollection, render } from 'astro:content';
+import { SHOW_BUY_BUTTON } from "astro:env/server";
+import Layout from '../../layouts/Layout.astro';
+import ProductScore from '../../components/ProductScore.astro';
+import BuyButton from '../../components/BuyButton.astro';
+
+export async function getStaticPaths() {
+    const products = await getCollection('products');
+
+    return products.map(product => ({
+        params: { id: product.slug },
+        props: { product }
+    }));
+}
+
+const { product } = Astro.props;
+const { data, slug } = product;
+const { title, seller, img, quantity, description, buy } = data;
+
+const { Content } = await render(product)
+
+export const prerender = true;
+---
+
+<Layout title={`${title} - Products`}>
+    <section class="place-content-center grid bg-gradient-to-b from-black to-gray-900 xl:h-screen xl:[@media(max-height:991px)]:h-[66rem]">
+        <div class="container">
+            <div class="flex justify-center gap-x-10">
+                <aside class="flex flex-col gap-y-5">
+                    <a href="/" class="text-white font-semibold text-lg hover:underline underline-offset-4">
+                        ⬅️ Back to Products
+                    </a>
+                    <img 
+                        transition:name={`img-${slug}`}
+                        src={`/images/${img}`} width="0" height="0" loading="lazy" alt={title} title={title} class="w-full h-auto object-contain rounded-4xl" />
+                    <!-- <span class="text-white" id="score"></span> -->
+                    <ProductScore server:defer id={slug}>
+                        <span slot="fallback" class="opacity-70 text-white">Loading...</span>
+                    </ProductScore>
+                </aside>
+                <div class=" max-w-[35rem]">
+                    <article class="flex flex-col gap-y-5">
+                        <h1 transition:name={`title-${slug}`}
+                            class="text-4xl text-white font-bold">{title}</h1>
+                        <p class="text-white text-xl">{description}</p>
+                        <p class="text-white text-lg"><strong>Seller:</strong> {seller}</p>
+                        <p class="text-white text-lg"><strong>Quantity:</strong> {quantity}</p>
+                        {
+                            SHOW_BUY_BUTTON && <BuyButton server:defer buy={buy} />
+                        }
+                    </article>
+                    <div class="mt-8">
+                        <p class="text-lg text-white mb-4">
+                            <strong>
+                                Product Details:
+                            </strong>
+                        </p>
+                        <div class="prose text-xl prose-invert">
+                            <Content/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</Layout>
+
+<!-- <script>
+    import { SCORE_API_ENDPOINT } from "astro:env/client";
+
+    const scoreElement = document.querySelector('#score');
+
+    fetch(SCORE_API_ENDPOINT)
+        .then(res => res.text())
+        .then(scoreValue => {
+            if (scoreValue) {
+                scoreElement.innerHTML = `💫 Score: ${scoreValue.trim()}/5`;
+            }
+        })
+
+</script> -->
